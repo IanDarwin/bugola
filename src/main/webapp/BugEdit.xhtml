@@ -1,0 +1,147 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+	xmlns:dos="http://java.sun.com/jsf/composite/dos"
+    template="template/template.xhtml">
+
+<h:head>
+<f:metadata>
+    <f:event type="preRenderView" rendered="#{!empty request.getParameter('bugId')}" listener="#{bugHome.wire(request.getParameter('bugId'))}"/>
+    <f:event type="preRenderView" rendered="#{ empty request.getParameter('bugId')}" listener="#{bugHome.wire()}"/>
+</f:metadata>
+</h:head>
+
+<ui:define name="title">Edit Issue #{bugHome.instance.id} - #{bugHome.instance.title}</ui:define>
+<ui:define name="body">
+
+    <h:form id="bug" styleClass="edit">
+
+		<p:panel rendered="#{!bugHome.managed}">
+		Please use this page to submit bugs in how the web site works.
+		If you're reporting an error in the site software, please
+		quote the text of the message (just saying "I got an error"
+		isn't quite as helpful as the actual text...).
+		To submit a report on a particular recipe, please use the Comment button
+		at the bottom of the page.
+		Thank you!
+		</p:panel>
+
+        <p:panelGrid columns="2" title="#{bugHome.managed ? 'Edit Issue' : 'Add Issue'}
+			#{bugHome.instance.id}  -  #{bugHome.instance.title}">
+
+                <h:outputText value="Id"/>
+                <h:outputText id="id" value="#{bugHome.instance.id}"/>
+
+                <h:outputText value="Summary"/>
+                <h:inputText id="title"
+                       required="true"
+                           size="80"
+                      maxlength="80"
+                          value="#{bugHome.instance.title}">
+                    <f:ajax event="blur" reRender="title" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+
+                <h:outputText value="Description"/>
+                <h:inputTextarea id="description"
+                       required="false"
+                           rows="6"
+                           cols="80"
+                      maxlength="1024"
+                          value="#{bugHome.instance.description}">
+                    <f:ajax event="blur" reRender="description" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputTextarea>
+
+                <h:outputText value="URL"/>
+                <h:inputText id="URL"
+                           size="80"
+                      maxlength="120"
+                          value="#{bugHome.instance.url}">
+                    <f:ajax event="blur" reRender="URL" bypassUpdates="true" ajaxSingle="true"/>
+                </h:inputText>
+
+                <h:outputText value="Components Affected"/>
+                <h:selectOneMenu converter="entityConverter" 
+                	value="#{bugHome.instance.product}"
+                	required="false">
+					<f:selectItems var="prod" value="#{productList.findAll()}"
+						noSelectionValue="--Select a Product--"
+						itemLabel="#{prod.name}" 
+						itemValue="#{prod}"/>
+                </h:selectOneMenu>
+            
+                <h:outputText value="Bug type"/>
+                <h:selectOneMenu value="#{bugHome.instance.type}">
+                	<f:selectItems value="#{factories.bugTypes}"
+                                 var="i" label="#{i}"/>
+                </h:selectOneMenu>
+
+                <h:outputText value="Bug Status"/>
+                <h:selectOneMenu value="#{bugHome.instance.status}">
+                     <f:selectItems value="#{factories.bugStatuses}"
+						 var="i" label="#{i}"/>
+                </h:selectOneMenu>
+
+		<h:outputText value="Fix Release"/>
+		<h:inputText value="#{bugHome.instance.fixRelease}"/>
+
+		<h:outputText value="Developer Comments"/>
+		<h:inputText value="#{bugHome.instance.comments"/>
+
+		<h:outputText value="Closed?"/>
+		<h:selectBooleanCheckbox 
+			value="#{bugHome.instance.closed}"
+			disabled="true"/>
+
+		<h:outputText value="Created"/>
+		<ui:fragment>
+            <h:outputText value="#{bugHome.instance.creationDate}">
+				<f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+			</h:outputText>
+			#{' '}by#{' '}
+			<h:commandLink value="#{bugHome.instance.submittor.name}"
+				view="/Profile.xhtml">
+				<f:param name="personId" value="#{bugHome.instance.submittor.id}"/>
+			</h:commandLink>
+		</ui:fragment>
+
+		<h:outputText value="Modified"/>
+		<h:outputText value="#{bugHome.instance.modificationDate}">
+			<f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+		</h:outputText>
+
+		<h:outputText value="Moderator Approved"/>
+		<h:selectBooleanCheckbox id="approved" value="#{bugHome.instance.approved}"/>
+
+        </p:panelGrid>
+
+		<div style="clear:both">
+			<span class="required">*</span>
+			required fields
+		</div>
+
+        <br/>
+
+		<p:commandButton value="Save" ajax='false'
+                         action="#{bugHome.save}"
+                       disabled="#{!bugHome.wired}"
+                       rendered="#{!bugHome.managed}"/>
+
+		<p:commandButton value="Update" ajax='false'
+                         action="#{bugHome.update}"
+                       rendered="#{bugHome.managed}"/>
+
+	</h:form>
+
+	<!-- In their own form to avoid hanging on validation -->
+	<h:form>
+		<p:commandButton value="Delete (no confirmation!)" action="#{bugHome.remove}" ajax='false'/>
+		<p:commandButton value="Cancel" action="#{bugHome.cancel}" ajax='false'/>
+    </h:form>
+
+</ui:define>
+
+</ui:composition>

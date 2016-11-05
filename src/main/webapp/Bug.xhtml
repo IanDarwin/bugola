@@ -1,0 +1,84 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+	xmlns:dos="http://java.sun.com/jsf/composite/dos"
+    template="template/template.xhtml">
+
+<h:head>
+<f:metadata>
+    <f:event type="preRenderView" listener="#{bugHome.wire(request.getParameter('bugId'))}"/>
+</f:metadata>
+</h:head>
+
+<ui:define name="title">Issue #{bugHome.instance.id} - #{bugHome.instance.title}</ui:define>
+<ui:define name="body">
+
+    <h:form name='bug'>
+
+    <p:panelGrid columns="2">
+        <f:facet name="header">Issue #{bugHome.instance.id} - #{bugHome.instance.title}</f:facet>
+
+            <h:outputText value="Title"/>
+            <h:outputText value="#{bugHome.instance.title}"/>
+
+            <h:outputText value="URL"/>
+            <h:outputText value="#{bugHome.instance.url}"/>
+
+            <h:outputText value="Details"/>
+            <h:outputText value="#{bugHome.instance.description}" escape='no'/>
+
+		<h:outputText value="Created"/>
+		<ui:fragment>
+            <h:outputText value="#{bugHome.instance.creationDate}">
+				<f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+			</h:outputText>
+			#{' '}by#{' '}
+			<h:outputLink value="#{bugHome.instance.submittor.name}"
+				view="/Customer.web">
+				<f:param name="personId" value="#{bugHome.instance.submittor.id}"/>
+			</h:outputLink>
+		</ui:fragment>
+
+		<h:outputText value="Modified"/>
+		<h:outputText value="#{bugHome.instance.modificationDate}">
+			<f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+		</h:outputText>
+
+		<h:outputText value="Type"/>
+		<h:outputText value="#{bugHome.instance.type}"/>
+
+		<h:outputText value="Affects"/>
+		<h:outputText value="#{bugHome.instance.product}"/>
+
+		<h:outputText value="Status"/>
+		<h:outputText value="#{bugHome.instance.status}"/>
+
+		<h:outputText value="Fix Release"/>
+		<h:outputText value="#{bugHome.instance.fixRelease}"/>
+
+		<h:outputText value="Developer Comments"/>
+		<h:outputText value="#{bugHome.instance.comments"/>
+
+    </p:panelGrid>
+
+    <div class="actionButtons">
+
+        <p:button view="/BugEdit.xhtml"
+                 value="Edit">
+			<f:param name="bugId" value="#{bugHome.instance.id}"/>
+		</p:button>
+
+        <p:commandButton view="/#{empty bugFrom ? 'BugList' : bugFrom}.xhtml"
+                 value="Done"/>
+
+    </div>
+
+    </h:form>
+
+</ui:define>
+
+</ui:composition>

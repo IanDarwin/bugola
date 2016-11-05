@@ -1,0 +1,74 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    template="template/template.xhtml">
+
+<ui:define name="title">Bug Search/List</ui:define>
+<ui:define name="body">
+
+    <p:panel>
+        <f:facet name="header">Bug Search Results (#{empty bugList.findAll() ? 'None' : bugList.findAll().size()})</f:facet>
+
+    <h:outputText value="The bug search returned no results."
+               rendered="#{empty bugList.findAll()}"/>
+
+    <p:dataTable id="bugList" border='1'
+                var="_bug"
+              value="#{bugList.findAll()}"
+           rendered="#{not empty bugList.findAll()}">
+                
+        <p:column width='10%'>
+            <f:facet name="header">Entered Date</f:facet>
+            <h:outputText value="#{_bug.creationDate}">
+				<f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+			</h:outputText>
+        </p:column>
+
+        <p:column width='25%'>
+            <f:facet name="header">Title</f:facet>
+            <h:outputText value="#{_bug.title}"/>
+        </p:column>
+
+        <p:column>
+            <f:facet name="header">Type</f:facet>
+            <h:outputText value="#{_bug.type}"/>
+        </p:column>
+
+        <p:column>
+            <f:facet name="header">Status</f:facet>
+            <h:outputText value="#{_bug.status}"/>
+        </p:column>
+
+        <p:column>
+            <f:facet name="header">Affecting</f:facet>
+            <h:outputText value="#{_bug.product.name}"/>
+        </p:column>
+ 
+        <p:column styleClass="action">
+            <f:facet name="header">Action</f:facet>
+			<h:outputLink value="Bug.web">
+				Details
+				<f:param name="bugId" value="#{_bug.id}"/>
+			</h:outputLink>
+			<h:outputLink value="BugEdit.web">
+				Edit
+				<f:param name="bugId" value="#{_bug.id}"/>
+			</h:outputLink>
+        </p:column>
+    </p:dataTable>
+
+    </p:panel>
+
+    <p:panel styleClass="actionButtons" rendered="#{empty from}">
+        <h:outputLink value="BugEdit.web">
+			 Add new bug/request/idea
+        </h:outputLink>
+    </p:panel>
+
+</ui:define>
+
+</ui:composition>

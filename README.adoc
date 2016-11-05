@@ -1,0 +1,16 @@
+= Bugola - the minimalist bug tracker
+
+Welcome to bugola, the world's tiniest Java EE based bug tracker.
+
+Note it is packaged as a WAR file so it is almost ready for deployment, but note:
+
+* You can treat it as a JAR file if you only want the Bugs data model;
+* You have to provide your own META-INF/persistence.xml if you want to use it as a WAR File.
+* There is a runtime dependency on DeltaSpike Data, which is used
+for making "List/Home" gateway objects, but you don't have to use it.
+* The WAR version uses container-managed Java EE security and BASIC-AUTH, but doesn't enforce
+transport-guarantee; *do not* deploy this unless you have (as we do ) a front end
+that enforces ALL traffic to be HTTPS!!
+* We are STILL using the ancient, broken Java 1.0 Date class because JPA does not yet support
+the current Date/Time classes in java.time and we don't want to provide converters for JSF,
+JPA, and maybe your database.
